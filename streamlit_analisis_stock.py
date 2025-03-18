@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from fpdf import FPDF
 import io
 import os
+from datetime import datetime
 
 # Función para realizar el análisis de stock
 def analizar_stock(df):
@@ -55,38 +56,15 @@ def analizar_stock(df):
     
     return df
 
-# Función para generar el informe en PDF
-def generar_pdf(df):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, "Informe de Análisis de Stock", ln=True, align="C")
-    pdf.ln(10)
-    
-    # Generar y guardar el gráfico antes de insertarlo en el PDF
-    fig, ax = plt.subplots(figsize=(8, 6))
-    pd.crosstab(df["Categoría ABC"], df["Clasificación Rotación 30D"]).plot(kind="bar", stacked=True, ax=ax)
-    image_path = "grafico_abc_rotacion.png"
-    plt.savefig(image_path, bbox_inches='tight')
-    plt.close()
-    
-    if os.path.exists(image_path):
-        pdf.image(image_path, x=10, w=180)
-    
-    pdf.multi_cell(0, 7, "Conclusión: La mayoría del stock de Categoría A tiene alta rotación y debe ubicarse en zonas accesibles.")
-    
-    pdf_output = io.BytesIO()
-    pdf.output(pdf_output, dest='S')
-    pdf_output.seek(0)
-    return pdf_output.read()
-
-# Función para generar el Excel con los cálculos
+# Función para generar el informe en Excel con fecha y hora
 def generar_excel(df):
     output = io.BytesIO()
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    file_name = f"Analisis_Stock_{timestamp}.xlsx"
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, sheet_name="Análisis de Stock", index=False)
     output.seek(0)
-    return output.getvalue()
+    return output.getvalue(), file_name
 
 # Interfaz Streamlit
 st.title("Análisis de Stock y Layout de Cámara Frigorífica")
@@ -100,10 +78,6 @@ if archivo is not None:
     st.write("### Datos analizados:")
     st.dataframe(df)
     
-    # Generar PDF
-    pdf_bytes = generar_pdf(df)
-    st.download_button("Descargar Informe en PDF", data=pdf_bytes, file_name="Informe_Stock.pdf", mime="application/pdf")
-    
-    # Generar Excel
-    excel_bytes = generar_excel(df)
-    st.download_button("Descargar Informe en Excel", data=excel_bytes, file_name="Analisis_Stock.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    # Generar Excel con fecha y hora
+    excel_bytes, excel_filename = generar_excel(df)
+    st.download_button("Descargar Informe en Excel", data=excel_bytes, file_name=excel_filename, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
