@@ -29,14 +29,14 @@ def analizar_stock(df):
     # Clasificación por tipo de producto
     def clasificar_tipo_producto(descripcion):
         descripcion = str(descripcion).lower()
-        if "pan" in descripcion or "baguette" in descripcion or "bocata" in descripcion:
+        if "pan" in descripcion or "baguette" in descripcion:
             return "Panadería"
         elif "croissant" in descripcion or "bollería" in descripcion or "donut" in descripcion:
             return "Bollería"
         elif "nata" in descripcion or "margarina" in descripcion or "mantequilla" in descripcion:
-            return "Con Margarina o Mantequilla"
+            return "Materias Primas"
         elif "chocolate" in descripcion or "cacao" in descripcion:
-            return "Con Chocolate"
+            return "Chocolate"
         else:
             return "Otros"
     
