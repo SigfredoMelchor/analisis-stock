@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 import io
+import os
 
 # Función para realizar el análisis de stock
 def analizar_stock(df):
@@ -28,14 +29,14 @@ def analizar_stock(df):
     # Clasificación por tipo de producto
     def clasificar_tipo_producto(descripcion):
         descripcion = str(descripcion).lower()
-        if "pan" in descripcion or "baguette" in descripcion:
+        if "pan" in descripcion or "baguette" in descripcion or "bocata" in descripcion:
             return "Panadería"
         elif "croissant" in descripcion or "bollería" in descripcion or "donut" in descripcion:
             return "Bollería"
         elif "nata" in descripcion or "margarina" in descripcion or "mantequilla" in descripcion:
-            return "Materias Primas"
+            return "Con Margarina o Mantequilla"
         elif "chocolate" in descripcion or "cacao" in descripcion:
-            return "Chocolate"
+            return "Con Chocolate"
         else:
             return "Otros"
     
@@ -65,10 +66,13 @@ def generar_pdf(df):
     # Generar y guardar el gráfico antes de insertarlo en el PDF
     fig, ax = plt.subplots(figsize=(8, 6))
     pd.crosstab(df["Categoría ABC"], df["Clasificación Rotación 30D"]).plot(kind="bar", stacked=True, ax=ax)
-    plt.savefig("grafico_abc_rotacion.png", bbox_inches='tight')
+    image_path = "grafico_abc_rotacion.png"
+    plt.savefig(image_path, bbox_inches='tight')
     plt.close()
     
-    pdf.image("grafico_abc_rotacion.png", x=10, w=180)
+    if os.path.exists(image_path):
+        pdf.image(image_path, x=10, w=180)
+    
     pdf.multi_cell(0, 7, "Conclusión: La mayoría del stock de Categoría A tiene alta rotación y debe ubicarse en zonas accesibles.")
     
     pdf_output = io.BytesIO()
