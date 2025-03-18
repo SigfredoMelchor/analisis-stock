@@ -15,7 +15,7 @@ def analizar_stock(df):
         lambda x: "Alta" if x <= 0.5 else "Media" if x <= 1.5 else "Baja")
     df["Clasificación Rotación 21D"] = df["Rotación 21 días"].apply(
         lambda x: "Alta" if x <= 0.5 else "Media" if x <= 1.5 else "Baja")
-    df["ABC + Rotación"] = df["Categoría ABC"] + " - " + df["Clasificación Rotación 30D"]
+    df["ABC + Rotación"] = df["Categoría ABC"].astype(str).fillna("Sin Clasificación") + " - " + df["Clasificación Rotación 30D"].astype(str).fillna("Sin Clasificación")
     
     # Análisis de Espacio por Pallets
     df["Pallets"] = df["Stock"] / df["CajasPalet"]
@@ -99,4 +99,3 @@ if archivo is not None:
     # Generar Excel
     excel_bytes = generar_excel(df)
     st.download_button("Descargar Informe en Excel", excel_bytes, "Analisis_Stock.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
- 
