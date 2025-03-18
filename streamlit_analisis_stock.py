@@ -62,15 +62,18 @@ def generar_pdf(df):
     pdf.cell(200, 10, "Informe de Análisis de Stock", ln=True, align="C")
     pdf.ln(10)
     
-    # Análisis ABC y Rotación
+    # Generar y guardar el gráfico antes de insertarlo en el PDF
     fig, ax = plt.subplots(figsize=(8, 6))
     pd.crosstab(df["Categoría ABC"], df["Clasificación Rotación 30D"]).plot(kind="bar", stacked=True, ax=ax)
-    plt.savefig("grafico_abc_rotacion.png")
+    plt.savefig("grafico_abc_rotacion.png", bbox_inches='tight')
+    plt.close()
+    
     pdf.image("grafico_abc_rotacion.png", x=10, w=180)
     pdf.multi_cell(0, 7, "Conclusión: La mayoría del stock de Categoría A tiene alta rotación y debe ubicarse en zonas accesibles.")
     
     pdf_output = io.BytesIO()
     pdf.output(pdf_output, dest='S')
+    pdf_output.seek(0)
     return pdf_output.getvalue()
 
 # Función para generar el Excel con los cálculos
@@ -78,6 +81,7 @@ def generar_excel(df):
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, sheet_name="Análisis de Stock", index=False)
+    output.seek(0)
     return output.getvalue()
 
 # Interfaz Streamlit
