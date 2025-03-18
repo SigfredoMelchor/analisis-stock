@@ -57,7 +57,6 @@ def analizar_stock(df):
 
 # Función para generar el informe en PDF
 def generar_pdf(df):
-    pdf_output = io.BytesIO()
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -76,9 +75,10 @@ def generar_pdf(df):
     
     pdf.multi_cell(0, 7, "Conclusión: La mayoría del stock de Categoría A tiene alta rotación y debe ubicarse en zonas accesibles.")
     
-    pdf.output(pdf_output, 'F')
+    pdf_output = io.BytesIO()
+    pdf.output(pdf_output, dest='S')
     pdf_output.seek(0)
-    return pdf_output.getvalue()
+    return pdf_output.read()
 
 # Función para generar el Excel con los cálculos
 def generar_excel(df):
