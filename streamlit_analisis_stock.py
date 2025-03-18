@@ -76,9 +76,9 @@ def generar_pdf(df):
     
     pdf.multi_cell(0, 7, "Conclusión: La mayoría del stock de Categoría A tiene alta rotación y debe ubicarse en zonas accesibles.")
     
-    pdf.output(pdf_output, dest='F')
+    pdf.output(pdf_output, 'F')
     pdf_output.seek(0)
-    return pdf_output.read()
+    return pdf_output.getvalue()
 
 # Función para generar el Excel con los cálculos
 def generar_excel(df):
@@ -102,8 +102,8 @@ if archivo is not None:
     
     # Generar PDF
     pdf_bytes = generar_pdf(df)
-    st.download_button("Descargar Informe en PDF", pdf_bytes, "Informe_Stock.pdf", "application/pdf")
+    st.download_button("Descargar Informe en PDF", data=pdf_bytes, file_name="Informe_Stock.pdf", mime="application/pdf")
     
     # Generar Excel
     excel_bytes = generar_excel(df)
-    st.download_button("Descargar Informe en Excel", excel_bytes, "Analisis_Stock.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    st.download_button("Descargar Informe en Excel", data=excel_bytes, file_name="Analisis_Stock.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
